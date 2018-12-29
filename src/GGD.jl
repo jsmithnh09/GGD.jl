@@ -20,7 +20,7 @@ export
     mean,       # get the location parameter (GGD Type)
 
     ### types
-    GGD,         # generic type containing params (μ, σ, α, β)
+    GeneralizedGaussian, # generic type containing params (μ, σ, α, β)
     GGDFunction # Function type (MLE, GCM, MoLC, Mallat's Method, etc.)
 
     # TODO: Check Distributions/src/univariate/inversegaussian.jl for proper
@@ -30,6 +30,9 @@ export
 
     # random sample generator
     include("ggdrandom.jl")
+
+    # types constructor
+    include("generalizedgaussian.jl")
 
     # estimation functions for β
     include("ggdest.jl")
