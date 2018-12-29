@@ -2,22 +2,32 @@ module GGD
 
 using Statistics, Distributions, SpecialFunctions
 
-import SpecialFunctions: gamma
-import Base: rand, randn
+import SpecialFunctions: gamma, sgn
+import Base: rand, randn, sqrt
 import Distributions: Gamma, sampler, rand
 
 export
     ### methods
     ggdrnd,     # sample from GGD distribution (utilizes Distributions package)
-    ggdcdf,     # CDF of GGD curve
-    ggdpdf,     # PDF of GGD curve
     ggdmle,     # maximum likelihood function of shape β
     ggdgcm,     # global convergence method function for β-estimation
     newton,     # Newton-Raphson estimation routine for root-finding
     params,     # get the distribution parameters (GGD Type)
-    beta,       # get the shape parameter (GGD Type)
-    alpha,      # get the scale parameter (GGD Type)
+    shape,      # get the shape parameter (GGD Type)
+    scale,      # get the scale parameter (GGD Type)
+    location,   # get the value of mu (GGD Type)
+    std,        # get the standard deviation (GGD Type)
     mean,       # get the location parameter (GGD Type)
+    median,     # median of (GGD Type)
+    mode,       # get the mode of the distribution.
+    var,        # get the variance of the distribution.
+    skewness,   # skewness of the distribution.
+    kurtosis,   # EXCESS KURTOSIS, includes the subtraction of 3.
+    entropy,    # entropy function of the distribution.
+    cdf,        # CDF of GGD curve TODO: Get lower incomplete gamma function.
+    pdf,        # PDF of GGD curve
+
+
 
     ### types
     GeneralizedGaussian, # generic type containing params (μ, σ, α, β)
