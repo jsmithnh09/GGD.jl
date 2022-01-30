@@ -4,3 +4,5 @@ Julia repository for the Generalized Gaussian Distribution. Once the module has 
 be contributed to the Distributions package, adding the `GeneralizedGaussian` or `GeneralizedNormal` type.
 
 [Wikipedia](https://en.wikipedia.org/wiki/Generalized_normal_distribution)
+
+Update: This successfully merged into the `Distributions.jl` package as `PGeneralizedGaussian`!
