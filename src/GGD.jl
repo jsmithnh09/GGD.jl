@@ -1,6 +1,6 @@
 module GGD
 
-using Statistics, Distributions, SpecialFunctions
+using Statistics, Distributions, SpecialFunctions, Random
 import SpecialFunctions: gamma
 import Distributions: Gamma, sampler, rand, Bernoulli
 
@@ -30,7 +30,7 @@ export
 
 
     ### types
-    GeneralizedGaussian, # generic type containing params (μ, σ, α, β)
+    GeneralizedGaussian # generic type containing params (μ, σ, α, β)
 
     ### source files
 
