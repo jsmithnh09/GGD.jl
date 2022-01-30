@@ -1,17 +1,15 @@
 module GGD
 
 using Statistics, Distributions, SpecialFunctions
-
-import SpecialFunctions: gamma, sgn
-import Base: rand, randn, sqrt
-import Distributions: Gamma, sampler, rand
+import SpecialFunctions: gamma
+import Distributions: Gamma, sampler, rand, Bernoulli
 
 export
     ### methods
-    ggdrnd,     # sample from GGD distribution (utilizes Distributions package)
-    ggdmle,     # maximum likelihood function of shape β
-    ggdgcm,     # global convergence method function for β-estimation
-    newton,     # Newton-Raphson estimation routine for root-finding
+#    ggdrnd,     # sample from GGD distribution (utilizes Distributions package)
+#    ggdmle,     # maximum likelihood function of shape β
+#    ggdgcm,     # global convergence method function for β-estimation
+#    newton,     # Newton-Raphson estimation routine for root-finding
     params,     # get the distribution parameters (GGD Type)
     shape,      # get the shape parameter (GGD Type)
     scale,      # get the scale parameter (GGD Type)
@@ -24,30 +22,22 @@ export
     skewness,   # skewness of the distribution.
     kurtosis,   # EXCESS KURTOSIS, includes the subtraction of 3.
     entropy,    # entropy function of the distribution.
-    cdf,        # CDF of GGD curve TODO: Get lower incomplete gamma function.
-    pdf,        # PDF of GGD curve
+    logpdf,     # log of the PDF function.
+    cdf,        # CDF of GGD curve. Uses Gamma Distribution for lower incomplete gamma use.
+    pdf,        # PDF of GGD curve.
+    rand,       # sample from GGD distribution.
 
 
 
     ### types
     GeneralizedGaussian, # generic type containing params (μ, σ, α, β)
-    GGDFunction # Function type (MLE, GCM, MoLC, Mallat's Method, etc.)
-
-    # TODO: Check Distributions/src/univariate/inversegaussian.jl for proper
-    # constructor overview.
 
     ### source files
-
-    # random sample generator
-    include("ggdrandom.jl")
 
     # types constructor
     include("generalizedgaussian.jl")
 
-    # estimation functions for β
-    include("ggdest.jl")
-    include("ggdroot.jl")
-
+    
     """
     A Julia Package for the Generalized Gaussian Distribution (GGD).
 
