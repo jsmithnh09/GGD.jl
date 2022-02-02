@@ -6,10 +6,8 @@ import Distributions: Gamma, sampler, rand, Bernoulli
 
 export
     ### methods
-#    ggdrnd,     # sample from GGD distribution (utilizes Distributions package)
-#    ggdmle,     # maximum likelihood function of shape β
-#    ggdgcm,     # global convergence method function for β-estimation
-#    newton,     # Newton-Raphson estimation routine for root-finding
+#    mle,       # maximum likelihood function of shape β
+    gcmsearch,  # Global Convergence Method Newton-Raphson search
     params,     # get the distribution parameters (GGD Type)
     shape,      # get the shape parameter (GGD Type)
     scale,      # get the scale parameter (GGD Type)

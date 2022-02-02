@@ -128,3 +128,53 @@ function rand(rng::AbstractRNG, d::GeneralizedGaussian)
     b = 2.0 * rand(Bernoulli()) -1
     return d.μ + inv(sqrt(d.α)) * rand(rng, g)^inv(d.β) * b
 end
+
+
+function Zn(X::AbstractArray, β::Real)
+    n = size(X,1)
+    a1 = 1/n * sum(abs.(X).^(2β))
+    a2 = 1/n * sum(abs.(X).^β)
+    return a1/(a2^2) - (β + 1)
+end
+
+function Zn′(X::AbstractArray, β::Real)
+    n = size(X,1)
+    S1 = sum(abs.(X).^β)
+    S2 = sum(abs.(X).^(2β))
+    L1 = sum(abs.(X).^β .* log.(abs.(X)))
+    L2 = sum(abs.(X).^(2β) .* log.(abs.(X)))
+    num1 = (2/n * L2) * (1/n * S1)^2
+    denom = (1/n * S1)^4
+    num2 = (1/n * L1) * (1/n * S2) * (2/n * S1)
+    return (num1/denom) - (num2/denom) - 1
+end
+
+"""
+    β = gcmsearch(X::AbstractArray, βi::Real)
+
+Globally convergent method for β-parameter estimation using Newton-Raphson
+iterative search from [1].
+
+[1] Song, Kai-Sheng. "A globally convergent and consistent method 
+    for estimating the shape parameter of a generalized Gaussian distribution." 
+    IEEE Transactions on Information Theory 52.2 (2006): 510-527.
+"""
+function gcmsearch(X::AbstractArray{T}, βi::Real) where T<:AbstractFloat
+    ϵ = √eps(T)
+    N_MAX = 1_000
+    βp = copy(βi)
+    num, denom = Zn(X, βp), Zn′(X, βp)
+    βn = βp - (num/denom)
+    βp = copy(βn)
+    for _ = 2:N_MAX
+        num, denom = Zn(X, βp), Zn′(X, βp)
+        βn = βp - (num/denom)
+        if (abs(βn - βp) < ϵ) # check if converged?
+            break
+        else
+            βp = copy(βn) # prep for next iteration.
+        end
+    end
+    βn
+end
+    
