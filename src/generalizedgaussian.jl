@@ -134,7 +134,7 @@ function Zn(X::AbstractArray, β::Real)
     n = size(X,1)
     a1 = 1/n * sum(abs.(X).^(2β))
     a2 = 1/n * sum(abs.(X).^β)
-    return a1/(a2^2) - (β + 1)
+    return (a1/(a2^2)) - (β + 1)
 end
 
 function Zn′(X::AbstractArray, β::Real)
