@@ -117,11 +117,11 @@ end
 
 
 """
-    rand(rng, d)
+    randggd(rng, d)
 Extract a sample from the Generalized Gaussian distribution `d`. The sampling
 procedure is implemented from from [2].
 """
-function rand(rng::AbstractRNG, d::GeneralizedGaussian)
+function randggd(rng::AbstractRNG, d::GeneralizedGaussian)
     # utilizing the sampler from the Gamma distribution.
     g = Gamma(inv(d.β), 1)
     # random variable with value -1 or 1 with probability (1/2).
