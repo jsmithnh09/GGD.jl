@@ -7,6 +7,7 @@ using Distributions, SpecialFunctions, Statistics, Random
 using SpecialFunctions: gamma
 using Distributions: Bernoulli, Gamma, sampler, rand
 import Base: rand
+import Random: GLOBAL_RNG
 
 ### source files
 include("generalizedgaussian.jl")
@@ -29,7 +30,7 @@ export
    logpdf,                  # log probability density
    cdf,                     # cummulative distribution function
    pdf,                     # probability density function
-   randggd                  # random sample from the distribution
+   rand                     # random sample from the distribution
 
 """
 A Julia Package for the Generalized Gaussian Distribution (GGD).
