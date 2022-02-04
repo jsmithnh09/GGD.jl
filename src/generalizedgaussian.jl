@@ -11,8 +11,8 @@ f(x; \\mu \\alpha \\beta ) = \\frac{\\beta}{2\\alpha\\Gamma(1/\\beta)}
 \\alpha = \\sigma \\sqrt{ \\frac{\\Gamma(1/\\beta)}{\\Gamma(3/\\beta)} }
 
 ```
-where `p = 1` incorporates the Laplacian distribution, `p = 2` is the Normal distribution,
-and as `p → ∞`, the distribution approaches Uniform on `[μ-α, μ+α]`.
+where `β = 1` incorporates the Laplacian distribution, `β = 2` is the Normal distribution,
+and as `β → ∞`, the distribution approaches Uniform on `[μ-α, μ+α]`.
 
 ```julia
 GeneralizedGaussian(m, a, b)    # Generalized Gaussian with mu, alpha, and beta.
@@ -117,31 +117,47 @@ end
 
 
 """
-    randggd(rng, d)
+    rand(rng, d)
 Extract a sample from the Generalized Gaussian distribution `d`. The sampling
 procedure is implemented from from [2].
 """
-function randggd(rng::AbstractRNG, d::GeneralizedGaussian)
+function rand(rng::AbstractRNG, d::GeneralizedGaussian)
     # utilizing the sampler from the Gamma distribution.
     g = Gamma(inv(d.β), 1)
     # random variable with value -1 or 1 with probability (1/2).
-    b = 2.0 * rand(Bernoulli()) -1
+    b = 2.0 * rand(Bernoulli()) - 1
     return d.μ + inv(sqrt(d.α)) * rand(rng, g)^inv(d.β) * b
 end
+
+# multi-sample case
+function rand(rng::AbstractRNG, d::GeneralizedGaussian, dims::Dims)
+    out = Array{eltype(params(d))}(undef, dims)
+    @inbounds for i in eachindex(out)
+        out[i] = rand(rng, d)
+    end
+    out
+end
+
+# various function signatures for sampling the distribution.
+rand(d::GeneralizedGaussian) = rand(GLOBAL_RNG, d)
+rand(d::GeneralizedGaussian, dims::Dims) = rand(GLOBAL_RNG, d, dims)
+rand(d::GeneralizedGaussian, dims::Int) = rand(GLOBAL_RNG, d, (dims))
+rand(rng::AbstractRNG, d::GeneralizedGaussian, dim::Int, dims::Int...) = rand(rng, d, (dim, dims...))
+rand(d::GeneralizedGaussian, dims::Int...) = rand(GLOBAL_RNG, d, dims...)
 
 
 function Zn(X::AbstractArray, β::Real)
     n = size(X,1)
-    a1 = 1/n * sum(abs.(X).^(2β))
-    a2 = 1/n * sum(abs.(X).^β)
-    return (a1/(a2^2)) - (β + 1)
+    S1 = 1/n * sum(abs.(X).^(2β))
+    S2 = 1/n * sum(abs.(X).^β)
+    return (S1/(S2^2)) - (β + 1)
 end
 
 function Zn′(X::AbstractArray, β::Real)
     n = size(X,1)
-    S1 = sum(abs.(X).^β)
+    S1 = sum(abs.(X).^β) # sum
     S2 = sum(abs.(X).^(2β))
-    L1 = sum(abs.(X).^β .* log.(abs.(X)))
+    L1 = sum(abs.(X).^β .* log.(abs.(X)))    # log
     L2 = sum(abs.(X).^(2β) .* log.(abs.(X)))
     num1 = (2/n * L2) * (1/n * S1)^2
     denom = (1/n * S1)^4
