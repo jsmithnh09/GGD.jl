@@ -153,7 +153,7 @@ function Zn(X::AbstractArray, β::Real)
     return (S1/(S2^2)) - (β + 1)
 end
 
-function Zn′(X::AbstractArray, β::Real)
+function Zp(X::AbstractArray, β::Real)
     n = size(X,1)
     S1 = sum(abs.(X).^β) # sum
     S2 = sum(abs.(X).^(2β))
@@ -175,22 +175,18 @@ iterative search from [1].
     for estimating the shape parameter of a generalized Gaussian distribution." 
     IEEE Transactions on Information Theory 52.2 (2006): 510-527.
 """
-function gcmsearch(X::AbstractArray{T}, βi::Real) where T<:AbstractFloat
-    ϵ = √eps(T)
-    N_MAX = 1_000
-    βp = copy(βi)
-    num, denom = Zn(X, βp), Zn′(X, βp)
-    βn = βp - (num/denom)
-    βp = copy(βn)
-    for _ = 2:N_MAX
-        num, denom = Zn(X, βp), Zn′(X, βp)
-        βn = βp - (num/denom)
-        if (abs(βn - βp) < ϵ) # check if converged?
-            break
-        else
-            βp = copy(βn) # prep for next iteration.
-        end
+
+
+function gcmsearch(X::AbstractArray{T}, βi::Real, n::Int) where T<:AbstractFloat
+    iter = 1
+    βcur = βi - Zn(X, βi) / Zp(X, βi)
+    while (iter < n) && !isapprox(βcur, βi, atol=√eps(T))
+        βi = copy(βcur)
+        βcur = βi - (Zn(X, βi) / Zp(X, βi))
+        iter += 1
     end
-    βn
+    βcur    
 end
-    
+
+### using |μ| / σ as an initial estimate when not provided.
+gcmsearch(X) = gcmsearch(X, (sum(abs, X) / length(X)) / std(X) + 3, 1_000)
