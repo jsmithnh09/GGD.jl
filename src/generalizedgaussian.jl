@@ -37,7 +37,7 @@ struct GeneralizedGaussian{T<:Real}
     μ::T
     α::T
     β::T
-    function GeneralizedGaussian{T}(μ::T, α::T, β::T) where T
+    function GeneralizedGaussian{T}(μ::T, α::T, β::T) where {T}
         α > zero(α) || error("standard deviation must be positive.")
         β > zero(β) || error("β must be greater than zero.")
         new{T}(μ, α, β)
@@ -63,10 +63,10 @@ Builds the Normal distribution case, where `μ=0, α=√2, β=2`, or N(0, 1).
 GeneralizedGaussian() = GeneralizedGaussian(0.0, √2, 2)
 
 ### Conversion
-function convert(::Type{GeneralizedGaussian{T}}, μ::Real, σ::Real, β::Real) where T <: Real
+function convert(::Type{GeneralizedGaussian{T}}, μ::Real, σ::Real, β::Real) where {T<:Real}
     GeneralizedGaussian(T(μ), T(α), T(β))
 end
-function convert(::Type{GeneralizedGaussian{T}}, d::GeneralizedGaussian{S}) where {T <: Real, S <: Real}
+function convert(::Type{GeneralizedGaussian{T}}, d::GeneralizedGaussian{S}) where {T<:Real,S<:Real}
     GeneralizedGaussian(T(d.μ), T(d.α), T(d.β))
 end
 
@@ -84,17 +84,17 @@ median(d::GeneralizedGaussian) = d.μ
 mode(d::GeneralizedGaussian) = d.μ
 
 ### Statistics
-skewness(d::GeneralizedGaussian{T}) where T = zero(T)
+skewness(d::GeneralizedGaussian{T}) where {T} = zero(T)
 kurtosis(d::GeneralizedGaussian) = gamma(5.0 * inv(d.β)) * gamma(inv(d.β)) / (gamma(3.0 * inv(d.β))^2) - 3.0
-entropy(d::GeneralizedGaussian) = inv(d.β) - log( d.β / (2.0 * d.α * gamma(inv(d.β))))
+entropy(d::GeneralizedGaussian) = inv(d.β) - log(d.β / (2.0 * d.α * gamma(inv(d.β))))
 
 ### Evaluation
-function pdf(d::GeneralizedGaussian{T}, x::Real) where T<:Real
+function pdf(d::GeneralizedGaussian{T}, x::Real) where {T<:Real}
     if x == -Inf || x == Inf
         return zero(T)
     else
-        A = d.β / (2.0 * d.α * gamma(1. / d.β) )
-        return A * exp( -(abs(x - d.μ) / d.α)^d.β )
+        A = d.β / (2.0 * d.α * gamma(1.0 / d.β))
+        return A * exp(-(abs(x - d.μ) / d.α)^d.β)
     end
 end
 logpdf(d::GeneralizedGaussian, x::Real) = log(pdf(d, x))
@@ -106,12 +106,12 @@ Calculates the CDF of the distribution. To determine the CDF, the incomplete
 gamma function is required. The CDF  of the Gamma distribution provides this,
 with the necessary 1/Γ(a) normalization.
 """
-function cdf(d::GeneralizedGaussian{T}, x::Real) where T<:Real
+function cdf(d::GeneralizedGaussian{T}, x::Real) where {T<:Real}
     if x == -Inf || x == Inf
         return zero(T)
     else
         v = cdf(Gamma(inv(d.β), 1), (abs(x - μ) / d.α)^d.β) * inv(2)
-        return typeof(v)(1/2) + sign(x - μ) * v
+        return typeof(v)(1 / 2) + sign(x - μ) * v
     end
 end
 
@@ -147,22 +147,22 @@ rand(d::GeneralizedGaussian, dims::Int...) = rand(GLOBAL_RNG, d, dims...)
 
 
 function Zn(X::AbstractArray, β::Real)
-    n = size(X,1)
-    S1 = 1/n * sum(abs.(X).^(2β))
-    S2 = 1/n * sum(abs.(X).^β)
-    return (S1/(S2^2)) - (β + 1)
+    n = size(X, 1)
+    S1 = 1 / n * sum(abs.(X) .^ (2β))
+    S2 = 1 / n * sum(abs.(X) .^ β)
+    return (S1 / (S2^2)) - (β + 1)
 end
 
 function Zp(X::AbstractArray, β::Real)
-    n = size(X,1)
-    S1 = sum(abs.(X).^β) # sum
-    S2 = sum(abs.(X).^(2β))
-    L1 = sum(abs.(X).^β .* log.(abs.(X)))    # log
-    L2 = sum(abs.(X).^(2β) .* log.(abs.(X)))
-    num1 = (2/n * L2) * (1/n * S1)^2
-    denom = (1/n * S1)^4
-    num2 = (1/n * L1) * (1/n * S2) * (2/n * S1)
-    return (num1/denom) - (num2/denom) - 1
+    n = size(X, 1)
+    S1 = sum(abs.(X) .^ β) # sum
+    S2 = sum(abs.(X) .^ (2β))
+    L1 = sum(abs.(X) .^ β .* log.(abs.(X)))    # log
+    L2 = sum(abs.(X) .^ (2β) .* log.(abs.(X)))
+    num1 = (2 / n * L2) * (1 / n * S1)^2
+    denom = (1 / n * S1)^4
+    num2 = (1 / n * L1) * (1 / n * S2) * (2 / n * S1)
+    return (num1 / denom) - (num2 / denom) - 1
 end
 
 """
@@ -177,7 +177,7 @@ iterative search from [1].
 """
 
 
-function gcmsearch(X::AbstractArray{T}, βi::Real, n::Int) where T<:AbstractFloat
+function gcmsearch(X::AbstractArray{T}, βi::Real, n::Int) where {T<:AbstractFloat}
     iter = 1
     βcur = βi - Zn(X, βi) / Zp(X, βi)
     while (iter < n) && !isapprox(βcur, βi, atol=√eps(T))
@@ -185,8 +185,11 @@ function gcmsearch(X::AbstractArray{T}, βi::Real, n::Int) where T<:AbstractFloa
         βcur = βi - (Zn(X, βi) / Zp(X, βi))
         iter += 1
     end
-    βcur    
+    βcur
 end
+
+### using 1e3 trials for "n" trials.
+gcmsearch(X, βi) = gcmsearch(X, βi, 1_000)
 
 ### using |μ| / σ as an initial estimate when not provided.
 gcmsearch(X) = gcmsearch(X, (sum(abs, X) / length(X)) / std(X) + 3, 1_000)

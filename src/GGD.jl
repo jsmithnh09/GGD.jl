@@ -3,34 +3,35 @@ Generalized Gaussian Distribution package.
 """
 module GGD
 
-using Distributions, SpecialFunctions, Statistics, Random
+using Distributions
 using SpecialFunctions: gamma
-using Distributions: Bernoulli, Gamma, sampler, rand
 import Base: rand
-import Random: GLOBAL_RNG
+import Statistics: std, var, mean
+import Random: GLOBAL_RNG, AbstractRNG
 
 ### source files
 include("generalizedgaussian.jl")
 
 ### methods
 export
-   GeneralizedGaussian,     # principle distribution type.
-   params,                  # returns shape, location, and scale parameters.
-   shape,                   # shape parameter β.
-   scale,                   # scale parameter α, which is related to variance via the shape parameter and gamma functions.
-   location,                # location parameter μ, the same as the mean/median/mode.
-   std,                     # standard deviation σ.
-   mean,                    # mean of the distribution (equal to μ)
-   median,                  # median of distribution
-   mode,                    # mode of distribution
-   var,                     # variance of distribution, (σ²)
-   skewness,                # skewness of Generalized Gaussian Distribution is zero.
-   kurtosis,                # Excess kurtosis of distribution, (this subtracts 3.)
-   entropy,                 # entropy of distribution
-   logpdf,                  # log probability density
-   cdf,                     # cummulative distribution function
-   pdf,                     # probability density function
-   rand                     # random sample from the distribution
+    GeneralizedGaussian,     # principle distribution type.
+    params,                  # returns shape, location, and scale parameters.
+    shape,                   # shape parameter β.
+    scale,                   # scale parameter α, which is related to variance via the shape parameter and gamma functions.
+    location,                # location parameter μ, the same as the mean/median/mode.
+    std,                     # standard deviation σ.
+    mean,                    # mean of the distribution (equal to μ)
+    median,                  # median of distribution
+    mode,                    # mode of distribution
+    var,                     # variance of distribution, (σ²)
+    skewness,                # skewness of Generalized Gaussian Distribution is zero.
+    kurtosis,                # Excess kurtosis of distribution, (this subtracts 3.)
+    entropy,                 # entropy of distribution
+    logpdf,                  # log probability density
+    cdf,                     # cummulative distribution function
+    pdf,                     # probability density function
+    gcmsearch,               # global convergence method for estimating ̂β
+    rand                     # random sample from the distribution
 
 """
 A Julia Package for the Generalized Gaussian Distribution (GGD).
