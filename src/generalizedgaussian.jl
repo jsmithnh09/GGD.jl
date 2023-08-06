@@ -193,3 +193,14 @@ gcmsearch(X, βi) = gcmsearch(X, βi, 1_000)
 
 ### using |μ| / σ as an initial estimate when not provided.
 gcmsearch(X) = gcmsearch(X, (sum(abs, X) / length(X)) / std(X) + 3, 1_000)
+
+# confidence interval for the estimate of the shape parameter via `gcmsearch`.
+# defaulting to z-score for 95 %.
+function confint(βest::Real, N::Int; z::Float=1.96)
+    A = coth(acoth(sqrt(βest + 1)) + ((1/(sqrt(2*N)))*z))^2
+    B = coth(acoth(sqrt(βest + 1)) - ((1/(sqrt(2*N)))*z))^2
+    (A-1, B-1)
+end
+
+
+    
