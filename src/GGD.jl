@@ -31,7 +31,8 @@ export
     cdf,                     # cummulative distribution function
     pdf,                     # probability density function
     gcmsearch,               # global convergence method for estimating ̂β
-    rand                     # random sample from the distribution
+    rand,                    # random sample from the distribution
+    gcmci                    # global convergence method confidence interval
 
 """
 A Julia Package for the Generalized Gaussian Distribution (GGD).
